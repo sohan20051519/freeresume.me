@@ -1,158 +1,100 @@
 import React from 'react';
 import { ResumeData } from '../../../types';
 
-interface TemplateProps {
-    data: ResumeData;
-}
-
 const formatUrl = (url: string) => {
     if (!url) return url;
-    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:')) {
-        return url;
-    }
-    if (url.includes('@')) {
-        return `mailto:${url}`;
-    }
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    if (url.includes('@')) return `mailto:${url}`;
     return `https://${url}`;
 };
 
-const CreativeTemplate: React.FC<TemplateProps> = ({ data }) => {
-    const { personalInfo, summary, experience, education, skills, projects, certifications, languages } = data;
+const CreativeTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
+    const { personalInfo, summary, experience, education, skills, projects } = data;
 
-    const IconWrapper: React.FC<{ children: React.ReactNode, text?: string, href?: string }> = ({ children, text, href }) => {
-        if (!text) return null;
-        const content = (
-            <>
-                {children}
-                <span>{text}</span>
-            </>
-        );
-        if (href) {
-            return (
-                <a href={href} target="_blank" rel="noopener noreferrer" className="flex items-center text-xs text-gray-600 hover:text-brand-primary transition-colors">
-                    {content}
-                </a>
-            );
-        }
+    const Section: React.FC<{ title: string; children: React.ReactNode; isPresent: boolean }> = ({ title, children, isPresent }) => {
+        if (!isPresent) return null;
         return (
-            <div className="flex items-center text-xs text-gray-600">
-                {content}
-            </div>
+            <section className="mb-6">
+                <h2 className="text-lg font-semibold tracking-wider text-brand-primary mb-2">{title}</h2>
+                {children}
+            </section>
         );
     };
 
     return (
-        <div className="h-full bg-white p-8 font-sans text-gray-800 text-sm flex flex-col">
-            {/* Header */}
-            <header className="flex justify-between items-center mb-8 pb-4 border-b-2 border-brand-secondary shrink-0">
-                <div>
-                    <h1 className="text-4xl font-bold text-gray-800 tracking-tight">{personalInfo.fullName}</h1>
-                    <p className="text-xl font-medium text-brand-primary mt-1">{personalInfo.jobTitle}</p>
-                </div>
-                <div className="text-right space-y-1">
-                    <IconWrapper text={personalInfo.email} href={formatUrl(personalInfo.email)}>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                    </IconWrapper>
-                    <IconWrapper text={personalInfo.phone}>
-                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
-                    </IconWrapper>
-                    <IconWrapper text={personalInfo.linkedin} href={formatUrl(personalInfo.linkedin)}>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="currentColor" ><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                    </IconWrapper>
+        <div className="w-full h-full bg-white font-sans text-gray-700 text-sm flex flex-col">
+            <header className="p-10 bg-gray-50">
+                <div className="grid grid-cols-3 gap-8 items-center">
+                    <div className="col-span-2">
+                        <h1 className="text-5xl font-extrabold text-gray-800">{personalInfo.fullName}</h1>
+                        <p className="text-xl text-gray-600 mt-2">{personalInfo.jobTitle}</p>
+                    </div>
+                    <div className="col-span-1 text-right text-xs">
+                        {personalInfo.email && <p><a href={formatUrl(personalInfo.email)} className="hover:underline">{personalInfo.email}</a></p>}
+                        {personalInfo.phone && <p>{personalInfo.phone}</p>}
+                        {personalInfo.address && <p>{personalInfo.address}</p>}
+                        {personalInfo.linkedin && <p><a href={formatUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" className="hover:underline">LinkedIn</a></p>}
+                        {personalInfo.website && <p><a href={formatUrl(personalInfo.website)} target="_blank" rel="noopener noreferrer" className="hover:underline">Portfolio</a></p>}
+                    </div>
                 </div>
             </header>
 
-            <main>
-                {/* Summary */}
-                <section className="mb-6">
-                    <h2 className="text-lg font-bold text-brand-secondary uppercase tracking-wider mb-2">Profile</h2>
-                    <p className="text-sm leading-relaxed text-gray-700">{summary}</p>
-                </section>
+            <main className="p-10 grid grid-cols-3 gap-10">
+                <div className="col-span-2">
+                    <Section title="About Me" isPresent={!!summary}>
+                        <p className="text-sm leading-relaxed">{summary}</p>
+                    </Section>
 
-                {/* Experience */}
-                <section className="mb-6">
-                    <h2 className="text-lg font-bold text-brand-secondary uppercase tracking-wider mb-2">Experience</h2>
-                    {experience.map(exp => (
-                        <div key={exp.id} className="mb-4">
-                            <div className="flex justify-between items-baseline">
-                                <h3 className="text-md font-semibold text-gray-900">{exp.jobTitle} at {exp.company}</h3>
-                                <p className="text-xs font-mono text-gray-500">{exp.startDate} - {exp.endDate}</p>
+                    <Section title="Experience" isPresent={experience && experience.length > 0}>
+                        {experience.map(exp => (
+                            <div key={exp.id} className="mb-4">
+                                <h3 className="font-semibold text-md">{exp.jobTitle} at {exp.company}</h3>
+                                <p className="text-xs text-gray-500">{exp.startDate} - {exp.endDate}</p>
+                                <ul className="list-disc list-outside ml-5 mt-1 text-xs space-y-1">
+                                    {exp.description.map((desc, i) => <li key={i}>{desc}</li>)}
+                                </ul>
                             </div>
-                            <p className="text-sm italic text-gray-600 mb-1">{exp.location}</p>
-                            <ul className="list-disc list-inside mt-1 space-y-1 text-sm text-gray-700">
-                                {exp.description.map((desc, i) => <li key={i}>{desc}</li>)}
-                            </ul>
-                        </div>
-                    ))}
-                </section>
+                        ))}
+                    </Section>
+                </div>
 
-                {/* Projects */}
-                {projects.length > 0 && (
-                    <section className="mb-6">
-                        <h2 className="text-lg font-bold text-brand-secondary uppercase tracking-wider mb-2">Projects</h2>
-                        {projects.map(proj => (
-                            <div key={proj.id} className="mb-4">
-                                <div className="flex justify-between items-baseline">
-                                    <h3 className="text-md font-semibold text-gray-900">{proj.name}</h3>
-                                    {proj.link && <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-brand-primary hover:underline">View Project</a>}
-                                </div>
-                                <ul className="list-disc list-inside mt-1 space-y-1 text-sm text-gray-700">
+                <div className="col-span-1">
+                    <Section title="Skills" isPresent={skills && skills.length > 0}>
+                        <div className="flex flex-wrap gap-2">
+                            {skills.map(skill => (
+                                <span key={skill.id} className="bg-brand-primary/10 text-brand-primary text-xs font-semibold px-2.5 py-1 rounded-full">{skill.name}</span>
+                            ))}
+                        </div>
+                    </Section>
+
+                    <Section title="Education" isPresent={education && education.length > 0}>
+                            {education.map(edu => (
+                            <div key={edu.id} className="mb-3">
+                                <h3 className="font-semibold">{edu.degree}</h3>
+                                <p className="text-xs text-gray-600">{edu.institution}</p>
+                                <p className="text-xs text-gray-500">{edu.endDate}</p>
+                            </div>
+                        ))}
+                    </Section>
+                    
+                        <Section title="Projects" isPresent={projects && projects.length > 0}>
+                            {projects.map(proj => (
+                            <div key={proj.id} className="mb-3">
+                                <h3 className="font-semibold">
+                                    {proj.link ? (
+                                        <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:underline">{proj.name}</a>
+                                    ) : (
+                                        proj.name
+                                    )}
+                                </h3>
+                                <ul className="list-disc list-outside ml-5 mt-1 text-xs space-y-1">
                                     {proj.description.map((desc, i) => <li key={i}>{desc}</li>)}
                                 </ul>
                             </div>
                         ))}
-                    </section>
-                )}
-                
-                {/* Education */}
-                <section className="mb-6">
-                    <h2 className="text-lg font-bold text-brand-secondary uppercase tracking-wider mb-2">Education</h2>
-                    {education.map(edu => (
-                        <div key={edu.id} className="mb-2">
-                            <div className="flex justify-between items-baseline">
-                                <h3 className="text-md font-semibold text-gray-900">{edu.institution}</h3>
-                                <p className="text-xs font-mono text-gray-500">{edu.startDate} - {edu.endDate}</p>
-                            </div>
-                            <p className="text-sm italic text-gray-600">{edu.degree}</p>
-                        </div>
-                    ))}
-                </section>
+                    </Section>
+                </div>
             </main>
-
-            <footer className="shrink-0">
-                {/* Skills */}
-                <section className="mb-6">
-                    <h2 className="text-lg font-bold text-brand-secondary uppercase tracking-wider mb-3">Skills</h2>
-                    <div className="flex flex-wrap gap-2">
-                        {skills.map(skill => (
-                            <span key={skill.id} className="bg-brand-primary/10 text-brand-primary text-xs font-semibold px-3 py-1 rounded-full">{skill.name}</span>
-                        ))}
-                    </div>
-                </section>
-
-                {/* Certifications */}
-                {certifications.length > 0 && (
-                    <section className="mb-6">
-                        <h2 className="text-lg font-bold text-brand-secondary uppercase tracking-wider mb-2">Certifications</h2>
-                        {certifications.map(cert => (
-                            <div key={cert.id} className="mb-2">
-                                <p className="text-sm"><span className="font-semibold">{cert.name}</span>, {cert.organization} ({cert.date})</p>
-                            </div>
-                        ))}
-                    </section>
-                )}
-                {/* Languages */}
-                {languages.length > 0 && (
-                    <section>
-                        <h2 className="text-lg font-bold text-brand-secondary uppercase tracking-wider mb-3">Languages</h2>
-                        <div className="flex flex-wrap gap-2">
-                            {languages.map(lang => (
-                                <span key={lang.id} className="bg-brand-secondary/10 text-brand-secondary text-xs font-semibold px-3 py-1 rounded-full">{lang.name} ({lang.proficiency})</span>
-                            ))}
-                        </div>
-                    </section>
-                )}
-            </footer>
         </div>
     );
 };

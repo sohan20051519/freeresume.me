@@ -188,9 +188,9 @@ const EditorForm: React.FC = () => {
                     <Input label="Job Title" name="jobTitle" value={data.personalInfo.jobTitle} onChange={handlePersonalInfoChange} />
                     <Input label="Email" name="email" type="email" value={data.personalInfo.email} onChange={handlePersonalInfoChange} />
                     <Input label="Phone" name="phone" type="tel" value={data.personalInfo.phone} onChange={handlePersonalInfoChange} />
+                    <Input label="Address" name="address" value={data.personalInfo.address} onChange={handlePersonalInfoChange} />
                     <Input label="LinkedIn Profile" name="linkedin" value={data.personalInfo.linkedin} onChange={handlePersonalInfoChange} />
-                    <Input label="Personal Website" name="website" value={data.personalInfo.website} onChange={handlePersonalInfoChange} />
-                    <Input label="Address" name="address" value={data.personalInfo.address} onChange={handlePersonalInfoChange} className="sm:col-span-2" />
+                    <Input label="GitHub / Website" name="website" value={data.personalInfo.website} onChange={handlePersonalInfoChange} className="sm:col-span-2" />
                 </div>
             </AccordionSection>
 

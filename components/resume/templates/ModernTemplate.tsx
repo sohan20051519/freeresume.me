@@ -1,128 +1,109 @@
 import React from 'react';
 import { ResumeData } from '../../../types';
 
-interface TemplateProps {
-    data: ResumeData;
-}
-
 const formatUrl = (url: string) => {
     if (!url) return url;
-    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:')) {
-        return url;
-    }
-    if (url.includes('@')) {
-        return `mailto:${url}`;
-    }
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    if (url.includes('@')) return `mailto:${url}`;
     return `https://${url}`;
 };
 
-const ModernTemplate: React.FC<TemplateProps> = ({ data }) => {
+const ModernTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
     const { personalInfo, summary, experience, education, skills, projects, certifications, languages } = data;
 
+    const MainSection: React.FC<{ title: string; children: React.ReactNode; isPresent: boolean }> = ({ title, children, isPresent }) => {
+        if (!isPresent) return null;
+        return (
+            <section className="mb-5">
+                <h2 className="text-lg font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-200 pb-1 mb-3">{title}</h2>
+                {children}
+            </section>
+        );
+    };
+
+    const SidebarSection: React.FC<{ title: string; children: React.ReactNode; isPresent: boolean }> = ({ title, children, isPresent }) => {
+        if (!isPresent) return null;
+        return (
+            <section className="mb-5">
+                <h2 className="text-sm font-semibold uppercase tracking-wider text-white border-b border-gray-400 pb-1 mb-2">{title}</h2>
+                {children}
+            </section>
+        );
+    };
+
     return (
-        <div className="h-full flex font-sans bg-white text-gray-800 text-sm">
-            {/* Left Column */}
-            <aside className="w-1/3 bg-gray-100 p-8 text-gray-700 flex flex-col">
-                <div className="text-center mb-10 shrink-0">
-                    <h1 className="text-3xl font-bold text-gray-900">{personalInfo.fullName}</h1>
-                    <p className="text-lg text-brand-primary font-medium mt-1">{personalInfo.jobTitle}</p>
-                </div>
-
-                <section className="mb-6 shrink-0">
-                    <h2 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3">Contact</h2>
-                    <div className="space-y-2 text-xs">
-                        {personalInfo.phone && <p>{personalInfo.phone}</p>}
-                        {personalInfo.email && <p><a href={formatUrl(personalInfo.email)} className="hover:underline">{personalInfo.email}</a></p>}
-                        {personalInfo.address && <p>{personalInfo.address}</p>}
-                        {personalInfo.linkedin && <p><a href={formatUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" className="hover:underline break-all">{personalInfo.linkedin}</a></p>}
-                        {personalInfo.website && <p><a href={formatUrl(personalInfo.website)} target="_blank" rel="noopener noreferrer" className="hover:underline break-all">{personalInfo.website}</a></p>}
+        <div className="w-full h-full bg-white font-sans flex text-sm">
+            {/* Sidebar */}
+            <aside className="w-1/3 bg-gray-700 text-white p-6">
+                <SidebarSection title="Contact" isPresent={true}>
+                    <div className="text-xs space-y-2 text-gray-200">
+                        {personalInfo.email && <p><span className="font-semibold">Email:</span><br/><a href={formatUrl(personalInfo.email)} className="break-all hover:underline">{personalInfo.email}</a></p>}
+                        {personalInfo.phone && <p><span className="font-semibold">Phone:</span><br/>{personalInfo.phone}</p>}
+                        {personalInfo.address && <p><span className="font-semibold">Location:</span><br/>{personalInfo.address}</p>}
+                        {personalInfo.linkedin && <p><span className="font-semibold">LinkedIn:</span><br/><a href={formatUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" className="break-all hover:underline">linkedin.com/...</a></p>}
+                        {personalInfo.website && <p><span className="font-semibold">Website:</span><br/><a href={formatUrl(personalInfo.website)} target="_blank" rel="noopener noreferrer" className="break-all hover:underline">{personalInfo.website}</a></p>}
                     </div>
-                </section>
-
-                <section className="mb-6">
-                    <h2 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3">Skills</h2>
-                    <ul className="space-y-1 text-sm">
-                        {skills.map(skill => (
-                            <li key={skill.id}>{skill.name}</li>
-                        ))}
+                </SidebarSection>
+                
+                <SidebarSection title="Skills" isPresent={skills && skills.length > 0}>
+                    <ul className="text-xs space-y-1 text-gray-200">
+                        {skills.map(skill => <li key={skill.id}>{skill.name}</li>)}
                     </ul>
-                </section>
-
-                {languages.length > 0 && (
-                <section className="shrink-0">
-                    <h2 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3">Languages</h2>
-                    <ul className="space-y-1 text-sm">
-                        {languages.map(lang => (
-                            <li key={lang.id}>{lang.name} <span className="text-xs text-gray-500">({lang.proficiency})</span></li>
-                        ))}
-                    </ul>
-                </section>
-                )}
+                </SidebarSection>
+            
+                <SidebarSection title="Education" isPresent={education && education.length > 0}>
+                    {education.map(edu => (
+                        <div key={edu.id} className="text-xs mb-3">
+                            <p className="font-bold text-white">{edu.degree}</p>
+                            <p className="text-gray-300">{edu.institution}</p>
+                            <p className="text-gray-400">{edu.endDate}</p>
+                        </div>
+                    ))}
+                </SidebarSection>
             </aside>
 
-            {/* Right Column */}
-            <main className="w-2/3 p-8 flex flex-col">
-                <section className="mb-6">
-                    <h2 className="text-xl font-bold text-brand-secondary border-b-2 border-gray-200 pb-2 mb-3">Summary</h2>
-                    <p className="leading-relaxed">{summary}</p>
-                </section>
+            {/* Main Content */}
+            <main className="w-2/3 p-8">
+                <header className="mb-6">
+                    <h1 className="text-4xl font-extrabold text-gray-800">{personalInfo.fullName}</h1>
+                    <p className="text-xl text-gray-600 font-medium">{personalInfo.jobTitle}</p>
+                </header>
 
-                <section className="mb-6">
-                    <h2 className="text-xl font-bold text-brand-secondary border-b-2 border-gray-200 pb-2 mb-3">Experience</h2>
+                <MainSection title="Summary" isPresent={!!summary}>
+                    <p className="text-sm leading-relaxed text-gray-700">{summary}</p>
+                </MainSection>
+
+                <MainSection title="Experience" isPresent={experience && experience.length > 0}>
                     {experience.map(exp => (
                         <div key={exp.id} className="mb-4">
                             <div className="flex justify-between items-baseline">
-                                <h3 className="text-md font-bold text-gray-900">{exp.jobTitle}</h3>
-                                <p className="text-xs font-mono text-gray-500">{exp.startDate} - {exp.endDate}</p>
+                                <h3 className="text-md font-semibold text-gray-800">{exp.jobTitle}</h3>
+                                <p className="text-xs text-gray-500">{exp.startDate} - {exp.endDate}</p>
                             </div>
-                            <p className="text-sm italic text-gray-700">{exp.company} | {exp.location}</p>
-                            <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
+                            <p className="text-sm italic text-gray-600">{exp.company}, {exp.location}</p>
+                            <ul className="list-disc list-outside ml-5 mt-1 space-y-1 text-xs text-gray-700">
                                 {exp.description.map((desc, i) => <li key={i}>{desc}</li>)}
                             </ul>
                         </div>
                     ))}
-                </section>
+                </MainSection>
 
-                {projects.length > 0 && (
-                    <section className="mb-6">
-                        <h2 className="text-xl font-bold text-brand-secondary border-b-2 border-gray-200 pb-2 mb-3">Projects</h2>
-                        {projects.map(proj => (
-                            <div key={proj.id} className="mb-4">
-                                <div className="flex justify-between items-baseline">
-                                    <h3 className="text-md font-bold text-gray-900">{proj.name}</h3>
-                                    {proj.link && <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-brand-primary hover:underline">View Project</a>}
-                                </div>
-                                <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
-                                    {proj.description.map((desc, i) => <li key={i}>{desc}</li>)}
-                                </ul>
-                            </div>
-                        ))}
-                    </section>
-                )}
-
-                <section className="mb-6">
-                    <h2 className="text-xl font-bold text-brand-secondary border-b-2 border-gray-200 pb-2 mb-3">Education</h2>
-                    {education.map(edu => (
-                        <div key={edu.id} className="mb-2">
-                            <div className="flex justify-between items-baseline">
-                                <h3 className="text-md font-bold text-gray-900">{edu.institution}</h3>
-                                <p className="text-xs font-mono text-gray-500">{edu.startDate} - {edu.endDate}</p>
-                            </div>
-                            <p className="text-sm italic text-gray-700">{edu.degree} | {edu.location}</p>
+                    <MainSection title="Projects" isPresent={projects && projects.length > 0}>
+                    {projects.map(proj => (
+                        <div key={proj.id} className="mb-4">
+                            <h3 className="text-md font-semibold text-gray-800">
+                                {proj.link ? (
+                                    <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="hover:underline">{proj.name}</a>
+                                ) : (
+                                    proj.name
+                                )}
+                            </h3>
+                            <ul className="list-disc list-outside ml-5 mt-1 space-y-1 text-xs text-gray-700">
+                                {proj.description.map((desc, i) => <li key={i}>{desc}</li>)}
+                            </ul>
                         </div>
                     ))}
-                </section>
-
-                {certifications.length > 0 && (
-                    <section>
-                        <h2 className="text-xl font-bold text-brand-secondary border-b-2 border-gray-200 pb-2 mb-3">Certifications</h2>
-                        {certifications.map(cert => (
-                            <div key={cert.id} className="mb-2">
-                                <p className="text-sm"><span className="font-bold">{cert.name}</span>, {cert.organization} ({cert.date})</p>
-                            </div>
-                        ))}
-                    </section>
-                )}
+                </MainSection>
             </main>
         </div>
     );

@@ -6,91 +6,74 @@ import ResumePreview from '../components/resume/ResumePreview';
 export default function EditorPage() {
     const navigate = useNavigate();
     const resumePreviewRef = useRef<HTMLDivElement>(null);
-    const [isGenerating, setIsGenerating] = useState(false);
     const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
 
-    const handleDownload = () => {
-        const source = resumePreviewRef.current?.firstChild as HTMLElement;
-        if (!source) {
-            alert("Could not find resume content to generate PDF.");
+    const handlePrint = () => {
+        const resumeNode = resumePreviewRef.current;
+        if (!resumeNode) {
+            alert("Could not find resume content to print.");
             return;
         }
 
-        setIsGenerating(true);
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) {
+            alert("Could not open print window. Please disable your popup blocker for this site.");
+            return;
+        }
 
-        const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
-            .map(el => el.outerHTML)
-            .join('');
-
-        const printHtml = `
-            <!DOCTYPE html>
+        printWindow.document.write(`
             <html>
                 <head>
                     <title>Your Resume</title>
-                    ${styles}
+                    <script src="https://cdn.tailwindcss.com"></script>
+                    <script>
+                      tailwind.config = {
+                        theme: {
+                          extend: {
+                            colors: {
+                               'brand-primary': '#4f46e5',
+                               'brand-secondary': '#7c3aed',
+                            }
+                          }
+                        }
+                      }
+                    </script>
                     <style>
                         @page {
-                            size: A4;
-                            margin: 0;
+                            size: letter;
+                            margin: 0; /* Remove browser default margins */
                         }
                         body {
                             margin: 0;
-                            -webkit-print-color-adjust: exact !important;
-                            print-color-adjust: exact !important;
-                            width: 850px;
-                            height: 1100px;
-                            transform-origin: top left;
-                            transform: scale(calc(210mm / 850px));
-                            overflow: hidden;
+                            -webkit-print-color-adjust: exact; /* For Chrome, Safari */
+                            print-color-adjust: exact; /* For Firefox */
+                        }
+                        /* Override fixed preview dimensions for printing */
+                        .w-\\[816px\\] {
+                            width: 100% !important;
+                        }
+                        .h-\\[1056px\\] {
+                            height: 100vh !important; /* Fit to one page exactly */
+                            overflow: hidden !important; /* Crop anything that overflows */
+                            box-sizing: border-box !important;
                         }
                     </style>
                 </head>
                 <body>
-                    ${source.outerHTML}
-                    <script>
-                        window.addEventListener('load', () => {
-                            setTimeout(() => {
-                                window.focus();
-                                window.print();
-                                window.close();
-                            }, 500); 
-                        });
-                    </script>
+                    ${resumeNode.outerHTML}
                 </body>
             </html>
-        `;
+        `);
 
-        const printWindow = window.open('', '_blank');
-        if (!printWindow) {
-            setIsGenerating(false);
-            alert('Could not open a new window. Please disable your pop-up blocker and try again.');
-            return;
-        }
-
-        printWindow.document.open();
-        printWindow.document.write(printHtml);
         printWindow.document.close();
 
+        // The timeout is crucial to let TailwindCSS initialize in the new window
         setTimeout(() => {
-            setIsGenerating(false);
-            if (isPreviewModalOpen) {
-                setIsPreviewModalOpen(false);
-            }
-        }, 3000);
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        }, 1000);
     };
-
-    const GeneratingIndicator = (
-         <div className="fixed inset-0 bg-white/70 backdrop-blur-md flex items-center justify-center z-[100]">
-            <div className="bg-white p-8 rounded-2xl shadow-neumorphic text-center max-w-sm">
-                <svg className="animate-spin h-10 w-10 text-brand-primary mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="http://www.w3.org/2000/svg">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <h3 className="text-xl font-semibold text-gray-800">Preparing your PDF...</h3>
-                <p className="text-gray-600 mt-2 text-sm">A new tab will open. Please use the "Save as PDF" option in the print dialog.</p>
-            </div>
-        </div>
-    );
 
     const ActionButtons = () => (
         <>
@@ -105,22 +88,19 @@ export default function EditorPage() {
                 <span>Change Template</span>
             </button>
             <button
-                onClick={handleDownload}
-                disabled={isGenerating}
-                className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-bold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handlePrint}
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-bold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-in-out"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                    <path fillRule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clipRule="evenodd" />
                 </svg>
-                <span>Download PDF</span>
+                <span>Print / Save as PDF</span>
             </button>
         </>
     );
 
     return (
         <div className="flex flex-col md:flex-row min-h-screen bg-gray-200">
-            {isGenerating && GeneratingIndicator}
-
             {/* Left Side: Editor Form */}
             <div className="w-full md:w-1/2 lg:w-2/5 p-4 md:p-6 lg:p-8">
                 <div className="bg-gray-100 rounded-2xl shadow-neumorphic-inset p-6">

@@ -1,3 +1,5 @@
+
+
 import React, { useState, useRef, useLayoutEffect } from 'react';
 import { useResume } from '../../context/ResumeContext';
 import { TEMPLATES } from '../../constants';
@@ -19,9 +21,9 @@ const ResumePreview = React.forwardRef<HTMLDivElement>((_, ref) => {
             if (entries[0]) {
                 const containerWidth = entries[0].contentRect.width;
                 if(containerWidth > 0) {
-                    // The resume's base width is 850px.
+                    // The resume's base width is 816px (US Letter aspect ratio).
                     // Calculate the scale factor needed to fit it into the container.
-                    setScale(containerWidth / 850);
+                    setScale(containerWidth / 816);
                 }
             }
         });
@@ -31,7 +33,7 @@ const ResumePreview = React.forwardRef<HTMLDivElement>((_, ref) => {
         // Perform an initial measurement on mount
         const initialWidth = currentContainer.offsetWidth;
         if (initialWidth > 0) {
-            setScale(initialWidth / 850);
+            setScale(initialWidth / 816);
         }
 
         return () => observer.disconnect();
@@ -55,8 +57,9 @@ const ResumePreview = React.forwardRef<HTMLDivElement>((_, ref) => {
                     {/* 
                       The forwarded ref from EditorPage points to this div.
                       This ensures that the PDF generation logic gets the full-size, unscaled resume content.
+                      A fixed height is used for the preview, but this is overridden for PDF generation to allow multiple pages.
                     */}
-                    <div ref={ref} className="w-[850px] h-[1100px] bg-white">
+                    <div ref={ref} className="w-[816px] h-[1056px] bg-white flex">
                         {SelectedTemplate ? <SelectedTemplate data={data} /> : <div>Template not found.</div>}
                     </div>
                 </div>

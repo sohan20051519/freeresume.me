@@ -1,10 +1,6 @@
 import React from 'react';
 import { ResumeData } from '../../../types';
 
-interface TemplateProps {
-    data: ResumeData;
-}
-
 const formatUrl = (url: string) => {
     if (!url) return url;
     if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:')) {
@@ -16,128 +12,83 @@ const formatUrl = (url: string) => {
     return `https://${url}`;
 };
 
-const ClassicTemplate: React.FC<TemplateProps> = ({ data }) => {
+
+const ClassicTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
     const { personalInfo, summary, experience, education, skills, projects, certifications, languages } = data;
-    const contactInfo = [
-        { type: 'email', value: personalInfo.email },
-        { type: 'phone', value: personalInfo.phone },
-        { type: 'address', value: personalInfo.address },
-        { type: 'linkedin', value: personalInfo.linkedin },
-        { type: 'website', value: personalInfo.website }
-    ].filter(item => item.value);
+
+    const Section: React.FC<{ title: string; children: React.ReactNode; isPresent: boolean }> = ({ title, children, isPresent }) => {
+        if (!isPresent) return null;
+        return (
+            <section className="mb-4">
+                <h2 className="text-sm font-bold uppercase tracking-widest text-gray-600 border-b-2 border-gray-300 pb-1 mb-2">{title}</h2>
+                {children}
+            </section>
+        );
+    };
 
     return (
-        <div className="h-full bg-white p-8 font-serif text-gray-800 text-sm flex flex-col">
-            {/* Header */}
-            <header className="text-center mb-6 shrink-0">
-                <h1 className="text-3xl font-bold tracking-wider uppercase">{personalInfo.fullName}</h1>
-                <p className="text-lg font-semibold text-brand-primary">{personalInfo.jobTitle}</p>
-                <div className="flex justify-center flex-wrap text-xs mt-2 text-gray-600">
-                    {contactInfo.map((info, index) => {
-                        let content;
-                        if (['email', 'linkedin', 'website'].includes(info.type)) {
-                            content = <a href={formatUrl(info.value)} target="_blank" rel="noopener noreferrer" className="hover:underline">{info.value}</a>;
-                        } else {
-                            content = <span>{info.value}</span>;
-                        }
-                        return (
-                            <React.Fragment key={index}>
-                                {content}
-                                {index < contactInfo.length - 1 && <span className="mx-2">|</span>}
-                            </React.Fragment>
-                        );
-                    })}
+        <div className="w-full h-full bg-white p-10 font-serif text-gray-800 text-[10.5pt] leading-normal flex flex-col">
+            <header className="text-center mb-6">
+                <h1 className="text-3xl font-bold tracking-wider">{personalInfo.fullName}</h1>
+                <p className="text-lg text-gray-600 mt-1">{personalInfo.jobTitle}</p>
+                 <div className="text-xs mt-2 text-gray-500 flex justify-center flex-wrap gap-x-3 gap-y-1">
+                    {personalInfo.address && <span>{personalInfo.address}</span>}
+                    {personalInfo.phone && <span>{personalInfo.phone}</span>}
+                    {personalInfo.email && <a href={formatUrl(personalInfo.email)} className="hover:underline">{personalInfo.email}</a>}
+                    {personalInfo.linkedin && <a href={formatUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" className="hover:underline">{personalInfo.linkedin}</a>}
+                    {personalInfo.website && <a href={formatUrl(personalInfo.website)} target="_blank" rel="noopener noreferrer" className="hover:underline">{personalInfo.website}</a>}
                 </div>
             </header>
 
             <main>
-                {/* Summary */}
-                <section className="mb-6">
-                    <h2 className="text-xl font-bold border-b-2 border-gray-300 pb-1 mb-2 uppercase tracking-widest">Summary</h2>
-                    <p className="text-sm leading-relaxed">{summary}</p>
-                </section>
-
-                {/* Experience */}
-                <section className="mb-6">
-                    <h2 className="text-xl font-bold border-b-2 border-gray-300 pb-1 mb-2 uppercase tracking-widest">Experience</h2>
+                <Section title="Summary" isPresent={!!summary}>
+                    <p>{summary}</p>
+                </Section>
+                
+                <Section title="Experience" isPresent={experience && experience.length > 0}>
                     {experience.map(exp => (
-                        <div key={exp.id} className="mb-4">
+                        <div key={exp.id} className="mb-3">
                             <div className="flex justify-between items-baseline">
-                                <h3 className="text-md font-bold text-gray-900">{exp.jobTitle}</h3>
-                                <p className="text-xs font-mono text-gray-500">{exp.startDate} - {exp.endDate}</p>
+                                <p><span className="font-bold">{exp.jobTitle}</span>, <span className="italic">{exp.company}</span></p>
+                                <p className="text-[9.5pt] text-gray-600">{exp.startDate} - {exp.endDate}</p>
                             </div>
-                            <p className="text-sm italic text-gray-700">{exp.company} | {exp.location}</p>
-                            <ul className="list-disc list-inside mt-1 space-y-1 text-sm">
+                            <ul className="list-disc list-outside ml-4 mt-1 space-y-0.5">
                                 {exp.description.map((desc, i) => <li key={i}>{desc}</li>)}
                             </ul>
                         </div>
                     ))}
-                </section>
-                
-                {/* Projects */}
-                {projects.length > 0 && (
-                    <section className="mb-6">
-                        <h2 className="text-xl font-bold border-b-2 border-gray-300 pb-1 mb-2 uppercase tracking-widest">Projects</h2>
-                        {projects.map(proj => (
-                            <div key={proj.id} className="mb-4">
-                                <div className="flex justify-between items-baseline">
-                                    <h3 className="text-md font-bold text-gray-900">{proj.name}</h3>
-                                    {proj.link && <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-brand-primary hover:underline">View Project</a>}
-                                </div>
-                                <ul className="list-disc list-inside mt-1 space-y-1 text-sm">
-                                    {proj.description.map((desc, i) => <li key={i}>{desc}</li>)}
-                                </ul>
-                            </div>
-                        ))}
-                    </section>
-                )}
+                </Section>
 
-                {/* Education */}
-                <section className="mb-6">
-                    <h2 className="text-xl font-bold border-b-2 border-gray-300 pb-1 mb-2 uppercase tracking-widest">Education</h2>
+                <Section title="Projects" isPresent={projects && projects.length > 0}>
+                        {projects.map(proj => (
+                            <div key={proj.id} className="mb-3">
+                                <p className="font-bold">
+                                {proj.link ? (
+                                    <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-black hover:underline">{proj.name}</a>
+                                ) : (
+                                    proj.name
+                                )}
+                            </p>
+                            <ul className="list-disc list-outside ml-4 mt-1 space-y-0.5">
+                                {proj.description.map((desc, i) => <li key={i}>{desc}</li>)}
+                            </ul>
+                        </div>
+                        ))}
+                </Section>
+            
+                <Section title="Education" isPresent={education && education.length > 0}>
                     {education.map(edu => (
-                        <div key={edu.id} className="mb-2">
-                            <div className="flex justify-between items-baseline">
-                                <h3 className="text-md font-bold text-gray-900">{edu.institution}</h3>
-                                <p className="text-xs font-mono text-gray-500">{edu.startDate} - {edu.endDate}</p>
-                            </div>
-                            <p className="text-sm italic text-gray-700">{edu.degree} | {edu.location}</p>
+                        <div key={edu.id} className="mb-2 flex justify-between">
+                            <p><span className="font-bold">{edu.degree}</span>, {edu.institution}</p>
+                            <p className="text-[9.5pt] text-gray-600">{edu.endDate}</p>
                         </div>
                     ))}
-                </section>
+                </Section>
+                
+                <Section title="Skills" isPresent={skills && skills.length > 0}>
+                    <p>{skills.map(s => s.name).join(' | ')}</p>
+                </Section>
             </main>
-
-            <footer className="shrink-0">
-                {/* Skills */}
-                <section className="mb-6">
-                    <h2 className="text-xl font-bold border-b-2 border-gray-300 pb-1 mb-2 uppercase tracking-widest">Skills</h2>
-                    <div className="flex flex-wrap gap-2">
-                        {skills.map(skill => (
-                            <span key={skill.id} className="bg-gray-200 text-gray-800 text-xs font-medium px-3 py-1 rounded-full">{skill.name}</span>
-                        ))}
-                    </div>
-                </section>
-
-                {/* Certifications */}
-                {certifications.length > 0 && (
-                    <section className="mb-6">
-                        <h2 className="text-xl font-bold border-b-2 border-gray-300 pb-1 mb-2 uppercase tracking-widest">Certifications</h2>
-                        {certifications.map(cert => (
-                            <div key={cert.id} className="mb-2">
-                                <p className="text-sm"><span className="font-bold">{cert.name}</span>, {cert.organization} ({cert.date})</p>
-                            </div>
-                        ))}
-                    </section>
-                )}
-
-                {/* Languages */}
-                {languages.length > 0 && (
-                    <section>
-                        <h2 className="text-xl font-bold border-b-2 border-gray-300 pb-1 mb-2 uppercase tracking-widest">Languages</h2>
-                        <p className="text-sm">{languages.map(lang => `${lang.name} (${lang.proficiency})`).join(', ')}</p>
-                    </section>
-                )}
-            </footer>
         </div>
     );
 };

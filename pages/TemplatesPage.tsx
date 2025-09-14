@@ -25,9 +25,9 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({ template, isHovered, 
         const observer = new ResizeObserver(() => {
             if (containerRef.current) {
                 const containerWidth = containerRef.current.offsetWidth;
-                // The resume is rendered at a base width of 850px.
+                // The resume is rendered at a base width of 816px (US Letter ratio).
                 // We calculate the scale factor needed to fit it perfectly into the container.
-                setScale(containerWidth / 850);
+                setScale(containerWidth / 816);
             }
         });
 
@@ -49,7 +49,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({ template, isHovered, 
                  >
                     {scale > 0 && (
                         <div style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}>
-                            <div className="w-[850px] h-[1100px] bg-white">
+                            <div className="w-[816px] h-[1056px] bg-white">
                                 <TemplateComponent data={DUMMY_RESUME_DATA} />
                             </div>
                         </div>

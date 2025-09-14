@@ -26,10 +26,10 @@ export const DUMMY_RESUME_DATA: ResumeData = {
     phone: "123-456-7890",
     address: "San Francisco, CA",
     linkedin: "linkedin.com/in/alexdoe",
-    website: "alexdoe.dev",
+    website: "github.com/alexdoe",
   },
   summary:
-    "Innovative and detail-oriented Senior Frontend Developer with over 8 years of experience building and maintaining responsive and scalable web applications. Proficient in React, TypeScript, and modern JavaScript frameworks. Passionate about creating seamless user experiences and collaborating in agile environments to deliver high-quality software.",
+    "Innovative and detail-oriented Senior Frontend Developer with over 8 years of experience building and maintaining responsive and scalable web applications. Proficient in React, TypeScript, and modern JavaScript frameworks. Passionate about creating seamless user experiences.",
   experience: [
     {
       id: "exp1",
@@ -41,7 +41,7 @@ export const DUMMY_RESUME_DATA: ResumeData = {
       description: [
         "Led the development of a new customer-facing dashboard using React and TypeScript, resulting in a 25% increase in user engagement.",
         "Mentored junior developers, conducted code reviews, and established best practices for frontend development.",
-        "Collaborated with UX/UI designers to translate wireframes into high-quality, pixel-perfect code.",
+        "Collaborated with UX/UI designers to translate wireframes into pixel-perfect code.",
       ],
     },
     {
@@ -54,7 +54,6 @@ export const DUMMY_RESUME_DATA: ResumeData = {
       description: [
         "Developed and maintained components for a large-scale e-commerce platform using Angular.",
         "Improved website performance by 40% through code optimization and lazy loading techniques.",
-        "Worked closely with backend developers to integrate RESTful APIs.",
       ],
     },
   ],
@@ -76,15 +75,27 @@ export const DUMMY_RESUME_DATA: ResumeData = {
     { id: 'skill5', name: 'Node.js' },
     { id: 'skill6', name: 'HTML5 & CSS3' },
     { id: 'skill7', name: 'Tailwind CSS' },
-    { id: 'skill8', name: 'GraphQL' },
+    { id: 'skill8', name: 'Webpack' },
     { id: 'skill9', name: 'Jest & React Testing Library' },
-    { id: 'skill10', name: 'Webpack' },
-    { id: 'skill11', name: 'Git & GitHub' },
-    { id: 'skill12', name: 'Agile Methodologies' }
   ],
-  projects: [],
-  certifications: [],
-  languages: [],
+  projects: [
+    {
+        id: 'proj1',
+        name: 'Project Alpha',
+        link: 'github.com/alexdoe/alpha',
+        description: [
+            "A real-time collaborative code editor built with React and WebSockets.",
+            "Implemented features like syntax highlighting and collaborative cursors."
+        ]
+    }
+  ],
+  certifications: [
+      { id: 'cert1', name: 'AWS Certified Cloud Practitioner', organization: 'Amazon Web Services', date: '2021' },
+  ],
+  languages: [
+      {id: 'lang1', name: 'English', proficiency: 'Native'},
+      {id: 'lang2', name: 'Spanish', proficiency: 'Conversational'}
+  ],
 };
 
 export const TEMPLATES: Template[] = [
@@ -193,7 +204,7 @@ export const resumeSchema = {
                 phone: { type: Type.STRING, description: "Phone number." },
                 address: { type: Type.STRING, description: "City and State, e.g., 'San Francisco, CA'." },
                 linkedin: { type: Type.STRING, description: "URL of LinkedIn profile." },
-                website: { type: Type.STRING, description: "URL of personal website or portfolio." },
+                website: { type: Type.STRING, description: "URL of personal website or portfolio, can be GitHub." },
             },
         },
         summary: { type: Type.STRING, description: "The professional summary or objective section." },
