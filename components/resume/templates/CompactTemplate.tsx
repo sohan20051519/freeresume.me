@@ -1,6 +1,17 @@
 import React from 'react';
 import { ResumeData } from '../../../types';
 
+const formatUrl = (url: string) => {
+    if (!url) return url;
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:')) {
+        return url;
+    }
+    if (url.includes('@')) {
+        return `mailto:${url}`;
+    }
+    return `https://${url}`;
+};
+
 const CompactTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
     const { personalInfo, summary, experience, education, skills, projects, certifications, languages } = data;
 
@@ -21,14 +32,14 @@ const CompactTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                 </header>
 
                 <SidebarSection title="Contact">
-                    {personalInfo.email && <p>{personalInfo.email}</p>}
+                    {personalInfo.email && <p className="break-all"><a href={formatUrl(personalInfo.email)} className="hover:underline">{personalInfo.email}</a></p>}
                     {personalInfo.phone && <p>{personalInfo.phone}</p>}
                     {personalInfo.address && <p>{personalInfo.address}</p>}
-                    {personalInfo.linkedin && <p className="break-all">{personalInfo.linkedin}</p>}
-                    {personalInfo.website && <p className="break-all">{personalInfo.website}</p>}
+                    {personalInfo.linkedin && <p className="break-all"><a href={formatUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" className="hover:underline">{personalInfo.linkedin}</a></p>}
+                    {personalInfo.website && <p className="break-all"><a href={formatUrl(personalInfo.website)} target="_blank" rel="noopener noreferrer" className="hover:underline">{personalInfo.website}</a></p>}
                 </SidebarSection>
                 
-                <SidebarSection title="Skills" className="flex-grow">
+                <SidebarSection title="Skills">
                     <ul className="list-disc list-inside">
                         {skills.map(skill => <li key={skill.id}>{skill.name}</li>)}
                     </ul>
@@ -60,7 +71,7 @@ const CompactTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                     <p className="text-sm leading-relaxed">{summary}</p>
                 </section>
 
-                <section className="mb-6 flex-grow">
+                <section className="mb-6">
                     <h2 className="text-lg font-bold text-gray-700 border-b border-gray-200 pb-1 mb-2">Experience</h2>
                      {experience.map(exp => (
                         <div key={exp.id} className="mb-4">
@@ -83,7 +94,7 @@ const CompactTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                             <div key={proj.id} className="mb-4">
                                 <div className="flex justify-between items-baseline">
                                     <h3 className="text-md font-semibold">{proj.name}</h3>
-                                    {proj.link && <a href={proj.link} target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-brand-primary hover:underline">View Project</a>}
+                                    {proj.link && <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-brand-primary hover:underline">View Project</a>}
                                 </div>
                                 <ul className="list-disc list-outside ml-5 mt-1 space-y-1 text-sm">
                                     {proj.description.map((desc, i) => <li key={i}>{desc}</li>)}

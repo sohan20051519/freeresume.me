@@ -1,6 +1,17 @@
 import React from 'react';
 import { ResumeData } from '../../../types';
 
+const formatUrl = (url: string) => {
+    if (!url) return url;
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:')) {
+        return url;
+    }
+    if (url.includes('@')) {
+        return `mailto:${url}`;
+    }
+    return `https://${url}`;
+};
+
 const CorporateTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
     const { personalInfo, summary, experience, education, skills, projects, certifications, languages } = data;
 
@@ -17,13 +28,13 @@ const CorporateTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                 <h1 className="text-4xl font-serif font-bold tracking-wider">{personalInfo.fullName}</h1>
                 <p className="text-lg font-light text-gray-700 mt-1">{personalInfo.jobTitle}</p>
                  <div className="text-xs text-gray-500 mt-3 flex justify-center flex-wrap gap-x-4">
-                    <span>{personalInfo.email}</span>
-                    <span>{personalInfo.phone}</span>
-                    <span>{personalInfo.linkedin}</span>
+                    {personalInfo.email && <a href={formatUrl(personalInfo.email)} className="hover:underline">{personalInfo.email}</a>}
+                    {personalInfo.phone && <span>{personalInfo.phone}</span>}
+                    {personalInfo.linkedin && <a href={formatUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" className="hover:underline">{personalInfo.linkedin}</a>}
                 </div>
             </header>
 
-            <main className="flex-grow">
+            <main>
                 <Section title="Summary">
                     <p className="leading-relaxed">{summary}</p>
                 </Section>
@@ -46,7 +57,10 @@ const CorporateTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                     <Section title="Projects">
                         {projects.map(proj => (
                             <div key={proj.id} className="mb-4">
-                                <h3 className="text-md font-semibold">{proj.name}</h3>
+                                <div className="flex justify-between items-baseline">
+                                    <h3 className="text-md font-semibold">{proj.name}</h3>
+                                    {proj.link && <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-xs text-brand-primary hover:underline">View Project</a>}
+                                </div>
                                 <ul className="list-disc list-outside ml-5 mt-1 space-y-1 text-gray-700">
                                     {proj.description.map((desc, i) => <li key={i}>{desc}</li>)}
                                 </ul>

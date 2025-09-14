@@ -1,6 +1,17 @@
 import React from 'react';
 import { ResumeData } from '../../../types';
 
+const formatUrl = (url: string) => {
+    if (!url) return url;
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:')) {
+        return url;
+    }
+    if (url.includes('@')) {
+        return `mailto:${url}`;
+    }
+    return `https://${url}`;
+};
+
 const GaramondTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
     const { personalInfo, summary, experience, education, skills, projects } = data;
     
@@ -17,8 +28,10 @@ const GaramondTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
             <header className="text-center mb-8">
                 <h1 className="text-4xl font-bold tracking-wide">{personalInfo.fullName}</h1>
                 <p className="text-md text-gray-600 mt-2">{personalInfo.jobTitle}</p>
-                 <div className="text-xs text-gray-500 mt-3 flex justify-center flex-wrap gap-x-4">
-                    {personalInfo.email} &bull; {personalInfo.phone} &bull; {personalInfo.address}
+                 <div className="text-xs text-gray-500 mt-3 flex justify-center items-center flex-wrap gap-x-2">
+                    {personalInfo.email && <a href={formatUrl(personalInfo.email)} className="hover:underline">{personalInfo.email}</a>}
+                    {personalInfo.phone && <><span>&bull;</span><span>{personalInfo.phone}</span></>}
+                    {personalInfo.address && <><span>&bull;</span><span>{personalInfo.address}</span></>}
                 </div>
             </header>
 

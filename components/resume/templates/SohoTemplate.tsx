@@ -1,6 +1,17 @@
 import React from 'react';
 import { ResumeData } from '../../../types';
 
+const formatUrl = (url: string) => {
+    if (!url) return url;
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:')) {
+        return url;
+    }
+    if (url.includes('@')) {
+        return `mailto:${url}`;
+    }
+    return `https://${url}`;
+};
+
 const SohoTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
     const { personalInfo, summary, experience, education, skills, projects, certifications, languages } = data;
 
@@ -18,11 +29,11 @@ const SohoTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                 <h1 className="text-5xl font-extrabold tracking-tight text-gray-900">{personalInfo.fullName}</h1>
                 <p className="text-xl font-medium text-brand-primary mt-2">{personalInfo.jobTitle}</p>
                  <div className="flex flex-wrap text-xs mt-4 text-gray-500 gap-x-5 gap-y-1">
-                    {personalInfo.email && <span>{personalInfo.email}</span>}
+                    {personalInfo.email && <a href={formatUrl(personalInfo.email)} className="hover:underline">{personalInfo.email}</a>}
                     {personalInfo.phone && <span>{personalInfo.phone}</span>}
                     {personalInfo.address && <span>{personalInfo.address}</span>}
-                    {personalInfo.linkedin && <span>{personalInfo.linkedin}</span>}
-                    {personalInfo.website && <span>{personalInfo.website}</span>}
+                    {personalInfo.linkedin && <a href={formatUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" className="hover:underline">{personalInfo.linkedin}</a>}
+                    {personalInfo.website && <a href={formatUrl(personalInfo.website)} target="_blank" rel="noopener noreferrer" className="hover:underline">{personalInfo.website}</a>}
                 </div>
             </header>
 
@@ -52,7 +63,7 @@ const SohoTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                             <div key={proj.id} className="mb-5">
                                 <div className="flex justify-between items-baseline">
                                     <h3 className="text-md font-semibold">{proj.name}</h3>
-                                    {proj.link && <a href={proj.link} target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-brand-primary hover:underline">View Project</a>}
+                                    {proj.link && <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-brand-primary hover:underline">View Project</a>}
                                 </div>
                                 <ul className="list-disc list-outside ml-5 space-y-1.5 text-gray-700">
                                     {proj.description.map((desc, i) => <li key={i}>{desc}</li>)}

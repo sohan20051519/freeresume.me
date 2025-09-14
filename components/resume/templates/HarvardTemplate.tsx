@@ -1,6 +1,17 @@
 import React from 'react';
 import { ResumeData } from '../../../types';
 
+const formatUrl = (url: string) => {
+    if (!url) return url;
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:')) {
+        return url;
+    }
+    if (url.includes('@')) {
+        return `mailto:${url}`;
+    }
+    return `https://${url}`;
+};
+
 const HarvardTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
     const { personalInfo, education, experience, skills, projects } = data;
 
@@ -10,13 +21,11 @@ const HarvardTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
             <header className="text-center mb-6">
                 <h1 className="text-3xl font-bold uppercase tracking-widest">{personalInfo.fullName}</h1>
                 <div className="flex justify-center flex-wrap text-xs mt-2 text-gray-700">
-                    <span>{personalInfo.address}</span>
-                    <span className="mx-2">|</span>
-                    <span>{personalInfo.phone}</span>
-                    <span className="mx-2">|</span>
-                    <span>{personalInfo.email}</span>
-                    {personalInfo.linkedin && <><span className="mx-2">|</span><span>{personalInfo.linkedin}</span></>}
-                    {personalInfo.website && <><span className="mx-2">|</span><span>{personalInfo.website}</span></>}
+                    {personalInfo.address && <span>{personalInfo.address}</span>}
+                    {personalInfo.phone && <><span className="mx-2">|</span><span>{personalInfo.phone}</span></>}
+                    {personalInfo.email && <><span className="mx-2">|</span><a href={formatUrl(personalInfo.email)} className="hover:underline">{personalInfo.email}</a></>}
+                    {personalInfo.linkedin && <><span className="mx-2">|</span><a href={formatUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" className="hover:underline">{personalInfo.linkedin}</a></>}
+                    {personalInfo.website && <><span className="mx-2">|</span><a href={formatUrl(personalInfo.website)} target="_blank" rel="noopener noreferrer" className="hover:underline">{personalInfo.website}</a></>}
                 </div>
             </header>
 
@@ -65,7 +74,7 @@ const HarvardTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                          <div key={proj.id} className="mb-3">
                             <div className="flex justify-between items-baseline">
                                 <p className="font-bold">{proj.name}</p>
-                                {proj.link && <a href={proj.link} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline">View Project</a>}
+                                {proj.link && <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline">View Project</a>}
                             </div>
                             <ul className="list-disc list-outside ml-5 mt-1 space-y-1 text-sm">
                                 {proj.description.map((desc, i) => <li key={i}>{desc}</li>)}

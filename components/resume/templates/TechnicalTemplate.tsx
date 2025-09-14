@@ -5,6 +5,17 @@ interface TemplateProps {
     data: ResumeData;
 }
 
+const formatUrl = (url: string) => {
+    if (!url) return url;
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:')) {
+        return url;
+    }
+    if (url.includes('@')) {
+        return `mailto:${url}`;
+    }
+    return `https://${url}`;
+};
+
 const TechnicalTemplate: React.FC<TemplateProps> = ({ data }) => {
     const { personalInfo, summary, experience, education, skills, projects, certifications, languages } = data;
 
@@ -22,15 +33,15 @@ const TechnicalTemplate: React.FC<TemplateProps> = ({ data }) => {
                 <h1 className="text-3xl font-bold">{personalInfo.fullName}</h1>
                 <p className="text-md font-medium text-brand-primary">{personalInfo.jobTitle}</p>
                 <div className="text-xs text-gray-600 mt-2 flex justify-center flex-wrap gap-x-4">
-                    {personalInfo.email && <span>{personalInfo.email}</span>}
+                    {personalInfo.email && <a href={formatUrl(personalInfo.email)} className="hover:underline">{personalInfo.email}</a>}
                     {personalInfo.phone && <span>{personalInfo.phone}</span>}
                     {personalInfo.address && <span>{personalInfo.address}</span>}
-                    {personalInfo.linkedin && <span>{personalInfo.linkedin}</span>}
-                    {personalInfo.website && <span>{personalInfo.website}</span>}
+                    {personalInfo.linkedin && <a href={formatUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" className="hover:underline">{personalInfo.linkedin}</a>}
+                    {personalInfo.website && <a href={formatUrl(personalInfo.website)} target="_blank" rel="noopener noreferrer" className="hover:underline">{personalInfo.website}</a>}
                 </div>
             </header>
 
-            <main className="flex-grow">
+            <main>
                 {/* Summary */}
                 <Section title="Summary">
                     <p className="text-sm">{summary}</p>
@@ -68,7 +79,7 @@ const TechnicalTemplate: React.FC<TemplateProps> = ({ data }) => {
                             <div key={proj.id} className="mb-4 break-inside-avoid">
                                 <div className="flex justify-between items-baseline">
                                     <h3 className="text-md font-semibold text-gray-900">{proj.name}</h3>
-                                    {proj.link && <a href={proj.link} target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-brand-primary hover:underline shrink-0 ml-4">View Project</a>}
+                                    {proj.link && <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-brand-primary hover:underline shrink-0 ml-4">View Project</a>}
                                 </div>
                                 <ul className="list-disc list-outside ml-4 mt-1 space-y-1 text-sm text-gray-700">
                                     {proj.description.map((desc, i) => <li key={i}>{desc}</li>)}

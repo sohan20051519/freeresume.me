@@ -5,6 +5,17 @@ interface TemplateProps {
     data: ResumeData;
 }
 
+const formatUrl = (url: string) => {
+    if (!url) return url;
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:')) {
+        return url;
+    }
+    if (url.includes('@')) {
+        return `mailto:${url}`;
+    }
+    return `https://${url}`;
+};
+
 const ModernTemplate: React.FC<TemplateProps> = ({ data }) => {
     const { personalInfo, summary, experience, education, skills, projects, certifications, languages } = data;
 
@@ -21,14 +32,14 @@ const ModernTemplate: React.FC<TemplateProps> = ({ data }) => {
                     <h2 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3">Contact</h2>
                     <div className="space-y-2 text-xs">
                         {personalInfo.phone && <p>{personalInfo.phone}</p>}
-                        {personalInfo.email && <p>{personalInfo.email}</p>}
+                        {personalInfo.email && <p><a href={formatUrl(personalInfo.email)} className="hover:underline">{personalInfo.email}</a></p>}
                         {personalInfo.address && <p>{personalInfo.address}</p>}
-                        {personalInfo.linkedin && <p>{personalInfo.linkedin}</p>}
-                        {personalInfo.website && <p>{personalInfo.website}</p>}
+                        {personalInfo.linkedin && <p><a href={formatUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" className="hover:underline break-all">{personalInfo.linkedin}</a></p>}
+                        {personalInfo.website && <p><a href={formatUrl(personalInfo.website)} target="_blank" rel="noopener noreferrer" className="hover:underline break-all">{personalInfo.website}</a></p>}
                     </div>
                 </section>
 
-                <section className="mb-6 flex-grow">
+                <section className="mb-6">
                     <h2 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3">Skills</h2>
                     <ul className="space-y-1 text-sm">
                         {skills.map(skill => (
@@ -56,7 +67,7 @@ const ModernTemplate: React.FC<TemplateProps> = ({ data }) => {
                     <p className="leading-relaxed">{summary}</p>
                 </section>
 
-                <section className="mb-6 flex-grow">
+                <section className="mb-6">
                     <h2 className="text-xl font-bold text-brand-secondary border-b-2 border-gray-200 pb-2 mb-3">Experience</h2>
                     {experience.map(exp => (
                         <div key={exp.id} className="mb-4">
@@ -79,7 +90,7 @@ const ModernTemplate: React.FC<TemplateProps> = ({ data }) => {
                             <div key={proj.id} className="mb-4">
                                 <div className="flex justify-between items-baseline">
                                     <h3 className="text-md font-bold text-gray-900">{proj.name}</h3>
-                                    {proj.link && <a href={proj.link} target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-brand-primary hover:underline">View Project</a>}
+                                    {proj.link && <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-brand-primary hover:underline">View Project</a>}
                                 </div>
                                 <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
                                     {proj.description.map((desc, i) => <li key={i}>{desc}</li>)}

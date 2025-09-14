@@ -5,6 +5,17 @@ interface TemplateProps {
     data: ResumeData;
 }
 
+const formatUrl = (url: string) => {
+    if (!url) return url;
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:')) {
+        return url;
+    }
+    if (url.includes('@')) {
+        return `mailto:${url}`;
+    }
+    return `https://${url}`;
+};
+
 const MinimalistTemplate: React.FC<TemplateProps> = ({ data }) => {
     const { personalInfo, summary, experience, education, skills, projects, certifications, languages } = data;
 
@@ -15,15 +26,15 @@ const MinimalistTemplate: React.FC<TemplateProps> = ({ data }) => {
                 <h1 className="text-4xl font-light tracking-wider uppercase">{personalInfo.fullName}</h1>
                 <p className="text-md font-normal text-gray-500 tracking-widest mt-1">{personalInfo.jobTitle}</p>
                 <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs mt-4 text-gray-500">
-                    {personalInfo.email && <span>{personalInfo.email}</span>}
+                    {personalInfo.email && <a href={formatUrl(personalInfo.email)} className="hover:underline">{personalInfo.email}</a>}
                     {personalInfo.phone && <span>{personalInfo.phone}</span>}
                     {personalInfo.address && <span>{personalInfo.address}</span>}
-                    {personalInfo.linkedin && <span>{personalInfo.linkedin}</span>}
-                    {personalInfo.website && <span>{personalInfo.website}</span>}
+                    {personalInfo.linkedin && <a href={formatUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" className="hover:underline">{personalInfo.linkedin}</a>}
+                    {personalInfo.website && <a href={formatUrl(personalInfo.website)} target="_blank" rel="noopener noreferrer" className="hover:underline">{personalInfo.website}</a>}
                 </div>
             </header>
 
-            <main className="flex-grow">
+            <main>
                 {/* Summary */}
                 <section className="mb-8">
                     <p>{summary}</p>
@@ -53,7 +64,7 @@ const MinimalistTemplate: React.FC<TemplateProps> = ({ data }) => {
                             <div key={proj.id} className="mb-5">
                                 <div className="flex justify-between items-baseline">
                                     <h3 className="text-md font-semibold text-gray-800">{proj.name}</h3>
-                                    {proj.link && <a href={proj.link} target="_blank" rel="noopener noreferrer" className="text-xs text-brand-primary hover:underline">View Project</a>}
+                                    {proj.link && <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-xs text-brand-primary hover:underline">View Project</a>}
                                 </div>
                                 <ul className="list-disc list-inside mt-2 ml-2 space-y-1 text-sm text-gray-600">
                                     {proj.description.map((desc, i) => <li key={i}>{desc}</li>)}

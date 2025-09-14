@@ -1,6 +1,17 @@
 import React from 'react';
 import { ResumeData } from '../../../types';
 
+const formatUrl = (url: string) => {
+    if (!url) return url;
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:')) {
+        return url;
+    }
+    if (url.includes('@')) {
+        return `mailto:${url}`;
+    }
+    return `https://${url}`;
+};
+
 const MonacoTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
     const { personalInfo, summary, experience, education, skills, projects, certifications, languages } = data;
     
@@ -29,14 +40,14 @@ const MonacoTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
 
                 <SidebarSection title="Contact">
                     <div className="space-y-1 text-xs">
-                        {personalInfo.email && <p className="break-all">{personalInfo.email}</p>}
+                        {personalInfo.email && <p className="break-all"><a href={formatUrl(personalInfo.email)} className="hover:underline">{personalInfo.email}</a></p>}
                         {personalInfo.phone && <p>{personalInfo.phone}</p>}
-                        {personalInfo.linkedin && <p className="break-all">{personalInfo.linkedin}</p>}
-                        {personalInfo.website && <p className="break-all">{personalInfo.website}</p>}
+                        {personalInfo.linkedin && <p className="break-all"><a href={formatUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" className="hover:underline">{personalInfo.linkedin}</a></p>}
+                        {personalInfo.website && <p className="break-all"><a href={formatUrl(personalInfo.website)} target="_blank" rel="noopener noreferrer" className="hover:underline">{personalInfo.website}</a></p>}
                     </div>
                 </SidebarSection>
                 
-                <SidebarSection title="Skills" className="flex-grow">
+                <SidebarSection title="Skills">
                     <ul className="text-sm space-y-1">
                         {skills.map(skill => <li key={skill.id}>{skill.name}</li>)}
                     </ul>
@@ -59,7 +70,7 @@ const MonacoTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                     <p className="leading-relaxed">{summary}</p>
                 </MainSection>
 
-                <MainSection title="Experience" className="flex-grow">
+                <MainSection title="Experience">
                      {experience.map(exp => (
                         <div key={exp.id} className="mb-4">
                             <div className="flex justify-between items-baseline">
@@ -78,7 +89,10 @@ const MonacoTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                     <MainSection title="Projects">
                         {projects.map(proj => (
                             <div key={proj.id} className="mb-4">
-                                <h3 className="text-md font-semibold">{proj.name}</h3>
+                                <div className="flex justify-between items-baseline">
+                                    <h3 className="text-md font-semibold">{proj.name}</h3>
+                                    {proj.link && <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-brand-primary hover:underline">View Project</a>}
+                                </div>
                                 <ul className="list-disc list-outside ml-5 mt-1 space-y-1 text-sm">
                                     {proj.description.map((desc, i) => <li key={i}>{desc}</li>)}
                                 </ul>

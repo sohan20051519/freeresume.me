@@ -1,6 +1,17 @@
 import React from 'react';
 import { ResumeData } from '../../../types';
 
+const formatUrl = (url: string) => {
+    if (!url) return url;
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:')) {
+        return url;
+    }
+    if (url.includes('@')) {
+        return `mailto:${url}`;
+    }
+    return `https://${url}`;
+};
+
 const ChronologicalTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
     const { personalInfo, summary, experience, education, skills, projects, certifications, languages } = data;
 
@@ -17,14 +28,14 @@ const ChronologicalTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                 <h1 className="text-4xl font-bold tracking-tight">{personalInfo.fullName}</h1>
                 <p className="text-xl text-gray-600 mt-1">{personalInfo.jobTitle}</p>
                  <div className="flex flex-wrap text-xs mt-4 text-gray-500 gap-x-6">
-                    {personalInfo.email && <span>{personalInfo.email}</span>}
+                    {personalInfo.email && <a href={formatUrl(personalInfo.email)} className="hover:underline">{personalInfo.email}</a>}
                     {personalInfo.phone && <span>{personalInfo.phone}</span>}
-                    {personalInfo.linkedin && <span>{personalInfo.linkedin}</span>}
-                    {personalInfo.website && <span>{personalInfo.website}</span>}
+                    {personalInfo.linkedin && <a href={formatUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" className="hover:underline">{personalInfo.linkedin}</a>}
+                    {personalInfo.website && <a href={formatUrl(personalInfo.website)} target="_blank" rel="noopener noreferrer" className="hover:underline">{personalInfo.website}</a>}
                 </div>
             </header>
 
-            <main className="flex-grow">
+            <main>
                 <Section title="Professional Summary">
                     <p className="leading-relaxed text-gray-700">{summary}</p>
                 </Section>

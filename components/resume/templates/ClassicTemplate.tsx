@@ -5,15 +5,26 @@ interface TemplateProps {
     data: ResumeData;
 }
 
+const formatUrl = (url: string) => {
+    if (!url) return url;
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:')) {
+        return url;
+    }
+    if (url.includes('@')) {
+        return `mailto:${url}`;
+    }
+    return `https://${url}`;
+};
+
 const ClassicTemplate: React.FC<TemplateProps> = ({ data }) => {
     const { personalInfo, summary, experience, education, skills, projects, certifications, languages } = data;
     const contactInfo = [
-        personalInfo.email,
-        personalInfo.phone,
-        personalInfo.address,
-        personalInfo.linkedin,
-        personalInfo.website
-    ].filter(Boolean);
+        { type: 'email', value: personalInfo.email },
+        { type: 'phone', value: personalInfo.phone },
+        { type: 'address', value: personalInfo.address },
+        { type: 'linkedin', value: personalInfo.linkedin },
+        { type: 'website', value: personalInfo.website }
+    ].filter(item => item.value);
 
     return (
         <div className="h-full bg-white p-8 font-serif text-gray-800 text-sm flex flex-col">
@@ -22,16 +33,24 @@ const ClassicTemplate: React.FC<TemplateProps> = ({ data }) => {
                 <h1 className="text-3xl font-bold tracking-wider uppercase">{personalInfo.fullName}</h1>
                 <p className="text-lg font-semibold text-brand-primary">{personalInfo.jobTitle}</p>
                 <div className="flex justify-center flex-wrap text-xs mt-2 text-gray-600">
-                    {contactInfo.map((info, index) => (
-                        <React.Fragment key={index}>
-                            <span>{info}</span>
-                            {index < contactInfo.length - 1 && <span className="mx-2">|</span>}
-                        </React.Fragment>
-                    ))}
+                    {contactInfo.map((info, index) => {
+                        let content;
+                        if (['email', 'linkedin', 'website'].includes(info.type)) {
+                            content = <a href={formatUrl(info.value)} target="_blank" rel="noopener noreferrer" className="hover:underline">{info.value}</a>;
+                        } else {
+                            content = <span>{info.value}</span>;
+                        }
+                        return (
+                            <React.Fragment key={index}>
+                                {content}
+                                {index < contactInfo.length - 1 && <span className="mx-2">|</span>}
+                            </React.Fragment>
+                        );
+                    })}
                 </div>
             </header>
 
-            <main className="flex-grow">
+            <main>
                 {/* Summary */}
                 <section className="mb-6">
                     <h2 className="text-xl font-bold border-b-2 border-gray-300 pb-1 mb-2 uppercase tracking-widest">Summary</h2>
@@ -63,7 +82,7 @@ const ClassicTemplate: React.FC<TemplateProps> = ({ data }) => {
                             <div key={proj.id} className="mb-4">
                                 <div className="flex justify-between items-baseline">
                                     <h3 className="text-md font-bold text-gray-900">{proj.name}</h3>
-                                    {proj.link && <a href={proj.link} target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-brand-primary hover:underline">View Project</a>}
+                                    {proj.link && <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-brand-primary hover:underline">View Project</a>}
                                 </div>
                                 <ul className="list-disc list-inside mt-1 space-y-1 text-sm">
                                     {proj.description.map((desc, i) => <li key={i}>{desc}</li>)}

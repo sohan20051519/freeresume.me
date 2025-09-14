@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import EditorForm from '../components/editor/EditorForm';
 import ResumePreview from '../components/resume/ResumePreview';
 
-const EditorPage: React.FC = () => {
+export default function EditorPage() {
     const navigate = useNavigate();
     const resumePreviewRef = useRef<HTMLDivElement>(null);
     const [isGenerating, setIsGenerating] = useState(false);
@@ -122,7 +122,7 @@ const EditorPage: React.FC = () => {
             {isGenerating && GeneratingIndicator}
 
             {/* Left Side: Editor Form */}
-            <div className="w-full md:w-1/2 lg:w-2/5 p-4 md:p-6 lg:p-8 md:h-screen md:overflow-y-auto">
+            <div className="w-full md:w-1/2 lg:w-2/5 p-4 md:p-6 lg:p-8">
                 <div className="bg-gray-100 rounded-2xl shadow-neumorphic-inset p-6">
                     <EditorForm />
                 </div>
@@ -178,6 +178,4 @@ const EditorPage: React.FC = () => {
             )}
         </div>
     );
-};
-
-export default EditorPage;
+}

@@ -1,6 +1,17 @@
 import React from 'react';
 import { ResumeData } from '../../../types';
 
+const formatUrl = (url: string) => {
+    if (!url) return url;
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:')) {
+        return url;
+    }
+    if (url.includes('@')) {
+        return `mailto:${url}`;
+    }
+    return `https://${url}`;
+};
+
 const FinancierTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
     const { personalInfo, summary, experience, education, skills, projects, certifications, languages } = data;
 
@@ -21,8 +32,8 @@ const FinancierTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                     <span className="text-gray-300">|</span>
                     {personalInfo.phone && <span>{personalInfo.phone}</span>}
                     <span className="text-gray-300">|</span>
-                    {personalInfo.email && <span>{personalInfo.email}</span>}
-                    {personalInfo.linkedin && <><span className="text-gray-300">|</span><span>{personalInfo.linkedin}</span></>}
+                    {personalInfo.email && <a href={formatUrl(personalInfo.email)} className="hover:underline">{personalInfo.email}</a>}
+                    {personalInfo.linkedin && <><span className="text-gray-300">|</span><a href={formatUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" className="hover:underline">{personalInfo.linkedin}</a></>}
                 </div>
             </header>
 
